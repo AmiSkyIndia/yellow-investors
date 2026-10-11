@@ -44,14 +44,16 @@ svg { fill: currentColor; }
 
 .skip-link {
   position: absolute;
-  left: -999px;
+  left: 10px;
   top: 0;
+  transform: translateY(-120%);
   background: var(--ink-dark);
   color: #fff;
   padding: 10px 16px;
   z-index: 200;
+  transition: transform .15s ease;
 }
-.skip-link:focus { left: 10px; top: 10px; }
+.skip-link:focus { transform: translateY(10px); }
 
 .icon { width: 18px; height: 18px; }
 .icon-lg { width: 30px; height: 30px; flex-shrink: 0; color: var(--red); }
@@ -132,7 +134,9 @@ svg { fill: currentColor; }
   position: relative;
   overflow: hidden;
   padding: 48px 0 40px;
-  background: linear-gradient(180deg, #fffaf0 0%, var(--cream) 60%);
+  background: linear-gradient(135deg, #fffaf0 0%, var(--cream) 45%, var(--gold-light) 100%);
+  background-size: 200% 200%;
+  animation: heroGradient 16s ease-in-out infinite;
 }
 .hero-glow {
   position: absolute;
@@ -141,18 +145,107 @@ svg { fill: currentColor; }
   border-radius: 50%;
   background: radial-gradient(circle, rgba(242,169,0,.20) 0%, rgba(242,169,0,0) 70%);
   pointer-events: none;
+  animation: glowPulse 7s ease-in-out infinite;
 }
 .hero-bg {
   position: absolute;
   inset: 0 0 0 auto;
   width: 46%;
   min-width: 340px;
-  opacity: .16;
+  opacity: .18;
   pointer-events: none;
   -webkit-mask-image: linear-gradient(to left, black 55%, transparent 100%);
   mask-image: linear-gradient(to left, black 55%, transparent 100%);
 }
 .skyline { width: 100%; height: 100%; }
+
+/* completed buildings: gentle construction "settle" breathing, staggered across the skyline */
+.building {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: buildingRise 6s ease-in-out infinite;
+}
+
+/* the active development: tower rises more visibly, scaffolding flickers */
+.building-rising {
+  transform-box: fill-box;
+  transform-origin: bottom;
+  animation: towerRise 6s ease-in-out infinite;
+}
+.scaffold { animation: scaffoldFlicker 1.4s steps(2, end) infinite; }
+
+/* crane: boom swings on the mast, hook/light blink like active machinery */
+.crane-boom {
+  transform-box: fill-box;
+  transform-origin: 0px 0px;
+  animation: craneSwing 7s ease-in-out infinite;
+}
+.crane-light { animation: craneLight 1s steps(2, end) infinite; }
+.crane-trolley {
+  transform-box: fill-box;
+  animation: trolleyMove 7s ease-in-out infinite;
+}
+
+/* investment growth line: draws itself upward across the skyline, then resets */
+.growth-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 3px rgba(242,169,0,.6));
+  animation: growthDraw 6s cubic-bezier(.4,0,.2,1) infinite;
+}
+@keyframes heroGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes glowPulse {
+  0%, 100% { transform: scale(1) translateY(0); opacity: 1; }
+  50% { transform: scale(1.12) translateY(20px); opacity: .7; }
+}
+@keyframes buildingRise {
+  0%, 100% { transform: scaleY(1) translateY(0); }
+  50% { transform: scaleY(1.035) translateY(-4px); }
+}
+@keyframes towerRise {
+  0%, 20% { transform: scaleY(.9) translateY(10px); opacity: .85; }
+  55%, 85% { transform: scaleY(1) translateY(0); opacity: 1; }
+  100% { transform: scaleY(.9) translateY(10px); opacity: .85; }
+}
+@keyframes scaffoldFlicker {
+  0%, 100% { opacity: .9; }
+  50% { opacity: .35; }
+}
+@keyframes craneSwing {
+  0%, 100% { transform: rotate(-6deg); }
+  50% { transform: rotate(6deg); }
+}
+@keyframes craneLight {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .25; }
+}
+@keyframes trolleyMove {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-38px); }
+}
+@keyframes growthDraw {
+  0%, 15% { stroke-dashoffset: 1; opacity: 0; }
+  20% { opacity: 1; }
+  70% { stroke-dashoffset: 0; opacity: 1; }
+  85%, 100% { stroke-dashoffset: 0; opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero,
+  .hero-glow,
+  .building,
+  .building-rising,
+  .scaffold,
+  .crane-boom,
+  .crane-light,
+  .crane-trolley,
+  .growth-line {
+    animation: none !important;
+  }
+  .growth-line { stroke-dashoffset: 0; opacity: .5; }
+}
 .hero-inner { position: relative; z-index: 1; }
 .hero-content { max-width: 700px; }
 .eyebrow {
@@ -559,5 +652,7 @@ svg { fill: currentColor; }
   .hero-stats { gap: 24px; }
   .hero-bg { width: 60%; min-width: 0; opacity: .12; }
   .hero-glow { width: 320px; height: 320px; top: -120px; right: -100px; }
+  .crane { display: none; }
+  .growth-line { stroke-width: 3; filter: none; }
   .footer-inner { grid-template-columns: 1fr; text-align: left; }
 }
